@@ -1,0 +1,8 @@
+{
+  "long_polling": {
+    "interval": 500,
+    "retry": 10
+  },
+  "setup":"./lua/setup.lua",
+  "metadata": "id, timestamp"
+}
