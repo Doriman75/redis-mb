@@ -17,7 +17,7 @@ module.exports = function(redis, conf) {
     limit: "10mb"
   }));
 
-  app.post("/topics/:topic", async function(req, res) {
+  app.post("/api/v1/topics/:topic", async function(req, res) {
     var body = JSON.parse(JSON.stringify(req.body));
     var messages = Array.isArray(body) ? body : [body];
     var metadata = req.query.metadata || conf.metadata || "";
@@ -25,10 +25,10 @@ module.exports = function(redis, conf) {
       .map(m => md.add(m, metadata, req, res))
       .map(m => JSON.stringify(m))
       .map(m => redis.enqueue(req.params.topic, m));
-    res.status(200).send(await Promise.all(messages));
+    res.status(200).json(await Promise.all(messages));
   });
 
-  app.get("/queues/:queue/:consumer", async function(req, res) {
+  app.get("/api/v1/queues/:queue/:consumer", async function(req, res) {
     var result = null;
     for (var i = 0; i < retry; i++) {
       result = JSON.parse(await redis.dequeue(req.params.queue, req.params.consumer));
