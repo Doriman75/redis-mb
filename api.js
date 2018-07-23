@@ -20,13 +20,15 @@ module.exports = function(redis, conf) {
   app.post("/api/v1/topics/:topic", async function(req, res) {
     var body = JSON.parse(JSON.stringify(req.body));
     var messages = Array.isArray(body) ? body : [body];
-    var metadata = req.query.metadata || conf.metadata || "";
+    var metadata = req.query.metadata || (conf.metadata && conf.metadata.list) || "";
+    var metadata_field = (conf.metadata && conf.metadata.field_name) || "metadata";
     messages
-      .map(m => md.add(m, metadata, req, res))
+      .map(m => md.add(m, metadata, req, res, metadata_field))
       .map(m => JSON.stringify(m))
       .map(m => redis.enqueue(req.params.topic, m));
     res.status(200).json(await Promise.all(messages));
   });
+
 
   app.get("/api/v1/queues/:queue/:consumer", async function(req, res) {
     var result = null;
