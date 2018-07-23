@@ -42,16 +42,24 @@ app.use(bodyParser.json(conf.body_parser || {
   limit: "10mb"
 }));
 
-app.post("/topics/:topic", async function(req, res) {
-  var body = JSON.parse(JSON.stringify(req.body));
-  var metadata = req.query.metadata || conf.metadata || "";
+function addMetaData(message, metadata, req, res) {
   Object.keys(metadata_functions)
     .filter(e => (metadata == "all" || metadata.indexOf(e) != -1))
-    .reduce((body, k) => {
-      return metadata_functions[k](body, req, res)
-    }, body);
+    .reduce((message, k) => {
+      return metadata_functions[k](message, req, res)
+    }, message);
+  return message;
+}
 
-  res.status(200).send(await redis.enqueue(req.params.topic, JSON.stringify(body)));
+app.post("/topics/:topic", async function(req, res) {
+  var body = JSON.parse(JSON.stringify(req.body));
+  var messages = Array.isArray(body) ? body : [body];
+  var metadata = req.query.metadata || conf.metadata || "";
+  messages
+    .map(m => addMetaData(m, metadata, req, res))
+    .map(m => JSON.stringify(m))
+    .map(m => redis.enqueue(req.params.topic, m));
+  res.status(200).send(await Promise.all(messages));
 });
 
 app.get("/queues/:queue/:consumer", async function(req, res) {
