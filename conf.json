@@ -3,6 +3,6 @@
     "interval": 500,
     "retry": 10
   },
-  "metadata": "id, timestamp, header[x-request-id]",
+  "metadata": "id, timestamp_iso8061, header[x-request-id]",
   "port":8080
 }

@@ -9,6 +9,10 @@ module.exports = {
       body.timestamp = new Date().getTime();
       return body;
     },
+    "timestamp_iso8061": function(body) {
+      body.timestamp_iso8061 = new Date().toISOString();
+      return body;
+    },
     "headers": function(body, req) {
       body.headers = req.headers;
       return body;
