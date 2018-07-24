@@ -13,7 +13,7 @@ module.exports = function(redis, conf) {
   }
 
   var app = express();
-  app.use(bodyParser.json(conf.body_parser || {
+  app.use(bodyParser.json({
     limit: "10mb"
   }));
 
@@ -26,7 +26,9 @@ module.exports = function(redis, conf) {
       .map(m => md.add(m, metadata, req, res, metadata_field))
       .map(m => JSON.stringify(m))
       .map(m => redis.enqueue(req.params.topic, m));
-    res.status(200).json(await Promise.all(messages));
+    var result = await Promise.all(messages);
+    if (result.length == 1) result = result[0];
+    res.status(200).json(result);
   });
 
 
