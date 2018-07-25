@@ -26,7 +26,7 @@ module.exports = function(redis, conf) {
       .map(m => md.add(m, metadata, req, res, metadata_field))
       .map(m => JSON.stringify(m));
 
-    var result = (await redis.enqueue2(req.params.topic, JSON.stringify(messages))).map(m => JSON.parse(m));
+    var result = (await redis.enqueue(req.params.topic, JSON.stringify(messages))).map(m => JSON.parse(m));
     if (result.length == 1) result = result[0];
     res.status(200).json(result);
   });
