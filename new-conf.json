@@ -1,7 +1,0 @@
-{
-  "long_polling": {
-    "interval": 100,
-    "retry": 50
-  },
-  "metadata": "id, timestamp"
-}

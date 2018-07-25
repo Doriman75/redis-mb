@@ -4,7 +4,6 @@ module.exports = function(redis) {
     numberOfKeys: 0,
     lua: fs.readFileSync("lua/enqueue.lua", "utf-8")
   });
-
   redis.defineCommand("dequeue", {
     numberOfKeys: 0,
     lua: fs.readFileSync("lua/dequeue.lua", "utf-8")
