@@ -67,7 +67,7 @@ The list of available metadata is:
  - ```header[<header_name>]```: the header *header_name* in the http request.
 
 
-The body of the response is the list of the message actually enqueued.
+The body of the response is number of the messages actually enqueued.
 
 ### Example: enqueue a message in the topic 'email'
 ```
@@ -81,11 +81,9 @@ body:
   }
 
 response:
-  {
-    "to": "user@domain.com",
-    "subject": "something about redis-mb",
-    "body": "redis-mb is very simple"
-  }
+{
+    "added": 1
+}
 ```
 
 
@@ -101,15 +99,9 @@ body:
   }
 
 response:
-  {
-      "to": "user@domain.com",
-      "subject": "something about redis-mb",
-      "body": "redis-mb is very simple",
-      "metadata": {
-          "uuid": "95c99d9b-bbeb-4a13-9633-483251b7c235",
-          "timestamp_iso8061": "2018-07-23T16:20:04.561Z"
-      }
-  }
+{
+  "added": 1
+}
 ```
 
 
@@ -138,23 +130,9 @@ body:
 ]
 
 response:
-[
-  {
-  	"to":"user1@domain.com",
-  	"subject":"something about redis-mb 1",
-  	"body":"redis-mb is very simple"
-  },
-  {
-  	"to":"user2@domain.com",
-  	"subject":"something about redis-mb 2",
-  	"body":"redis-mb is very good"
-  },
-  {
-  	"to":"user3@domain.com",
-  	"subject":"something about redis-mb 3",
-  	"body":"redis-mb is very light"
-  }
-]
+{
+    "added": 3
+}
 ```
 
 ### Example: enqueue a list of messages in the topic 'email' with some metadata
@@ -182,38 +160,9 @@ body:
 ]
 
 response:
-[
-    {
-        "to": "user1@domain.com",
-        "subject": "something about redis-mb 1",
-        "body": "redis-mb is very simple",
-        "metadata": {
-            "uuid": "31f5bcd1-60a8-416b-9a0d-77caabe074a7",
-            "host": "localhost:8080",
-            "x-request-id": "4e43e3d8-80b0-4d83-8ef2-e794728baead"
-        }
-    },
-    {
-        "to": "user2@domain.com",
-        "subject": "something about redis-mb 2",
-        "body": "redis-mb is very good",
-        "metadata": {
-            "uuid": "09713d46-6f4b-4fcc-9dfa-63f38a1cc7c3",
-            "host": "localhost:8080",
-            "x-request-id": "4e43e3d8-80b0-4d83-8ef2-e794728baead"
-        }
-    },
-    {
-        "to": "user3@domain.com",
-        "subject": "something about redis-mb 3",
-        "body": "redis-mb is very light",
-        "metadata": {
-            "uuid": "ee8a16fc-8c65-44c7-88d1-3b8047c5ffba",
-            "host": "localhost:8080",
-            "x-request-id": "4e43e3d8-80b0-4d83-8ef2-e794728baead"
-        }
-    }
-]
+{
+    "added": 3
+}
 ```
 
 # Configuration

@@ -1,8 +1,17 @@
+redis.replicate_commands();
 local topic = ARGV[1];
-local consumers = redis.call("SMEMBERS", "topics:" .. topic);
-local messages = cjson.decode(ARGV[2]);
-for i, c in ipairs(consumers)
+local strings = cjson.decode(ARGV[2]);
+local scheduled_at = ARGV[3];
+local messages = {};
+for i, e in ipairs(strings)
 do
-  redis.call("RPUSH", "queues:" .. topic .. ":" .. c, unpack(messages));
+  table.insert(messages, scheduled_at);
+  table.insert(messages, e);
 end
-return messages;
+
+for i, c in ipairs(redis.call("SMEMBERS", "topics:" .. topic))
+do
+    redis.call("ZADD", "queues:" .. topic .. ":" .. c, unpack(messages));
+end
+
+return table.getn(strings);

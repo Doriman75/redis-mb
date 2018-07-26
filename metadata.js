@@ -19,6 +19,9 @@ module.exports = {
     },
     "headers": function(field_name, body, req) {
       return addMeta(field_name, body, 'headers', req.headers);
+    },
+    "scheduled_at": function(field_name, body, req) {
+      return addMeta(field_name, body, 'scheduled_at', req.query.scheduled_at);
     }
   },
   "params": {
