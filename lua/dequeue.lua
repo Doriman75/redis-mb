@@ -10,5 +10,4 @@ then
   redis.call("ZREM", queue_name, messages[1]);
   return messages[1];
 end
-
 return nil;

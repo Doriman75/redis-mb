@@ -47,7 +47,6 @@ module.exports = {
       })
       .filter(k => this.params[k.method])
       .forEach(k => message = this.params[k.method](field_name, message, req, res, k.param));
-
     return message;
   }
 };

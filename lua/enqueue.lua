@@ -9,6 +9,7 @@ do
   table.insert(messages, e);
 end
 
+
 for i, c in ipairs(redis.call("SMEMBERS", "topics:" .. topic))
 do
     redis.call("ZADD", "queues:" .. topic .. ":" .. c, unpack(messages));
