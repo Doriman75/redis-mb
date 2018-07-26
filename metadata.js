@@ -7,35 +7,19 @@ function addMeta(field_name, body, key, value) {
 }
 
 module.exports = {
-  "fixed": {
-    "uuid": function(field_name, body, req, res) {
-      return addMeta(field_name, body, 'uuid', uuidv4());
-    },
-    "timestamp": function(field_name, body) {
-      return addMeta(field_name, body, 'timestamp', new Date().getTime());
-    },
-    "timestamp_iso8061": function(field_name, body) {
-      return addMeta(field_name, body, 'timestamp_iso8061', new Date().toISOString());
-    },
-    "headers": function(field_name, body, req) {
-      return addMeta(field_name, body, 'headers', req.headers);
-    },
-    "scheduled_at": function(field_name, body, req) {
-      return addMeta(field_name, body, 'scheduled_at', req.query.scheduled_at);
-    }
-  },
+  "fixed": ,
   "params": {
-    "header": function(field_name, body, req, res, param) {
-      return addMeta(field_name, body, param, req.get(param));
+    "header": function(field_name, body, headers, query, param) {
+      return addMeta(field_name, body, param, headers[param]);
     }
   },
-  "add": function(message, metadata, req, res, field_name) {
+  "add": function(message, metadata, headers, field_name) {
     var metadatas = metadata != "all" ? metadata.split(",").map(e => e.trim()) : Object.keys(this.fixed);
 
     metadatas
       .filter(e => e.indexOf("[") == -1)
       .filter(k => this.fixed[k])
-      .forEach(k => message = this.fixed[k](field_name, message, req, res));
+      .forEach(k => message = this.fixed[k](field_name, message, headers));
 
     metadatas
       .filter(e => e.indexOf("[") != -1)
@@ -46,7 +30,7 @@ module.exports = {
         }
       })
       .filter(k => this.params[k.method])
-      .forEach(k => message = this.params[k.method](field_name, message, req, res, k.param));
+      .forEach(k => message = this.params[k.method](field_name, message, headers, k.param));
     return message;
   }
 };
