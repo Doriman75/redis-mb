@@ -50,10 +50,13 @@ HTTP Status: 204
 ## To produce a message in a topic
 The api to enqueue a message in the *Virtual Topic* is:
 
-```POST: /api/v1/topics/[virtual-topic]?metadata=[metadata-list]```
+```POST: /api/v1/topics/[virtual-topic]?metadata=[metadata-list]&list=[boolean]&scheduled_at=[scheduled_at]```
 
 *virtual-topic* is the name of the virtual topic where to post the message.
 *metadata-list* is the list of metadata to add to the message.
+*list* is a boolean. If false the list of messages will be not returned. Usefull for performance reasons.
+*scheduled_at* is the timestamp (in any string format accepted by ```new Date(scheduled_at) ``` javascript function)
+
 The body of the request must be a valid json.
 If the body is an object then it will be loaded in the topic.
 If the body is an array then each element will be loaded in the topic one by one.
@@ -82,7 +85,14 @@ body:
 
 response:
 {
-    "added": 1
+    "added": 1,
+    "list": [
+        {
+            "to": "user@domain.com",
+            "subject": "something about redis-mb",
+            "body": "redis-mb is very simple"
+        }
+    ]
 }
 ```
 
@@ -100,7 +110,49 @@ body:
 
 response:
 {
-  "added": 1
+    "added": 1,
+    "list": [
+        {
+            "to": "user@domain.com",
+            "subject": "something about redis-mb",
+            "body": "redis-mb is very simple",
+            "metadata": {
+                "uuid": "927b08a3-b5a0-42d0-9595-362d6112e469",
+                "timestamp_iso8061": "2018-07-26T10:06:35.903Z"
+            }
+        }
+    ]
+}
+```
+
+
+### Example: enqueue a message in the topic 'email' scheduled at a specific date, with specific metadata
+```
+url: /api/v1/topics/email?scheduled_at=2018-07-26T11:52&metadata=uuid,scheduled_at,timestamp_iso8061,header[x-request-id]
+method: POST
+body:
+  {
+  	"to":"user@domain.com",
+  	"subject":"something about redis-mb",
+  	"body":"redis-mb is very simple"
+  }
+
+response:
+{
+    "added": 1,
+    "list": [
+        {
+            "to": "user@domain.com",
+            "subject": "something about redis-mb",
+            "body": "redis-mb is very simple",
+            "metadata": {
+                "uuid": "ec343254-5cc6-4333-bb55-eb463c39f915",
+                "scheduled_at": "2018-07-26T11:52",
+                "timestamp_iso8061": "2018-07-26T10:07:45.966Z",
+                "x-request-id": "ec5450a2-84d1-4a84-8b30-085be284b07e"
+            }
+        }
+    ]
 }
 ```
 
@@ -108,7 +160,7 @@ response:
 ### Example: enqueue a list of messages in the topic 'email'
 
 ```
-url: /api/v1/topics/email
+url: /api/v1/topics/email?list=false
 method: POST
 body:
 [
@@ -161,7 +213,39 @@ body:
 
 response:
 {
-    "added": 3
+    "added": 3,
+    "list": [
+        {
+            "to": "user1@domain.com",
+            "subject": "something about redis-mb 1",
+            "body": "redis-mb is very simple",
+            "metadata": {
+                "uuid": "7180837f-dbb1-47ed-8b0c-4b828bd40ae7",
+                "host": "localhost:8080",
+                "x-request-id": "515d2f31-c696-4c44-9469-52d232faa50c"
+            }
+        },
+        {
+            "to": "user2@domain.com",
+            "subject": "something about redis-mb 2",
+            "body": "redis-mb is very good",
+            "metadata": {
+                "uuid": "1e5b74b6-6e21-46f8-a9d3-18ee3e476251",
+                "host": "localhost:8080",
+                "x-request-id": "515d2f31-c696-4c44-9469-52d232faa50c"
+            }
+        },
+        {
+            "to": "user3@domain.com",
+            "subject": "something about redis-mb 3",
+            "body": "redis-mb is very light",
+            "metadata": {
+                "uuid": "4ded51e4-e057-42fb-b44c-4fd6390426cc",
+                "host": "localhost:8080",
+                "x-request-id": "515d2f31-c696-4c44-9469-52d232faa50c"
+            }
+        }
+    ]
 }
 ```
 

@@ -42,7 +42,6 @@ module.exports = function(redis, conf) {
     res.status(200).json(result);
   });
 
-
   app.get("/api/v1/queues/:queue/:consumer", async function(req, res) {
     var result = null;
     for (var i = 0; i < retry; i++) {
