@@ -25,12 +25,16 @@ setInterval(() => {
 
 module.exports = function(redis, conf) {
   const engine = require("./engine")(redis, conf);
-  wss.on('connection', function connection(ws, req) {
+  wss.on('connection', function(ws, req) {
     var info = url.parse(req.url, true);
     console.log("connection detected!", info.query)
     setTimeout(() => {
       dequeue(ws, info.query.queue, info.query.consumer)
     }, 0);
+
+    ws.on('message', function(message) {
+      console.log(message);
+    });
   });
 
   async function dequeue(ws, queue, consumer) {

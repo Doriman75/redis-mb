@@ -14,4 +14,4 @@ const redis = new require('ioredis')(conf.redis || {});
 require("./configure-redis")(redis);
 if (commander.setup) require("./setup")(redis, commander.setup);
 require("./api")(redis, conf);
-require("./websocket")(redis, conf);
+//require("./websocket")(redis, conf);
