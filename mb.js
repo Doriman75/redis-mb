@@ -1,12 +1,7 @@
 const fs = require('fs');
 
-const commander = require('commander')
-  .version("0.0.1")
-  .usage('[options]')
-  .option("-c, --conf <configuration>", "configuration file, default: ./conf.json")
-  .parse(process.argv);
-
-const conf = require("./config")(commander.conf);
+const conf = require("./config")(process.argv[2]);
+console.log(JSON.stringify(conf, null, 4));
 
 const redis = new require('ioredis')(conf.redis || {});
 redis.defineCommand("enqueue", {

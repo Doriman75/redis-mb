@@ -12,8 +12,6 @@ var conf = {
 }
 
 module.exports = function(filename) {
-  if (!filename) return conf;
-  var config = JSON.parse(require('fs').readFileSync(filename, "utf-8"));
-  var result = Object.assign({}, conf, config);
-  console.log(JSON.stringify(result, null, 4));
+  var config = filename ? JSON.parse(require('fs').readFileSync(filename, "utf-8")) : {};
+  return Object.assign({}, conf, config);
 }
