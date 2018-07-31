@@ -47,8 +47,8 @@ function meta(metadata_list, params) {
 
 async function enqueue(topic, messages, params) {
   var messages = Array.isArray(messages) ? messages : [messages];
-  var metadata_field = (this.conf.metadata && this.conf.metadata.field_name) || "metadata";
-  var metadata_list = params.metadata || (this.conf.metadata && this.conf.metadata.list) || "uuid";
+  var metadata_field = this.conf.metadata.field_name;
+  var metadata_list = this.conf.metadata.list;
   var scheduled_at = params.scheduled_at ? new Date(params.scheduled_at).getTime() : new Date().getTime();
   var messages_with_meta = messages
     .map(m => {
@@ -71,13 +71,10 @@ function sleep(ms) {
 }
 
 async function dequeue(queue, consumer) {
-  const retry = this.conf.long_polling && this.conf.long_polling.retry || 10;
-  const interval = this.conf.long_polling && this.conf.long_polling.interval || 500;
-
-  for (var i = 0; i < retry; i++) {
+  for (var i = 0; i < this.conf.long_polling.retry; i++) {
     var result = JSON.parse(await this.redis.dequeue(queue, consumer));
     if (result) return result;
-    await sleep(interval);
+    await sleep(this.conf.long_polling.interval);
   }
   return null;
 }

@@ -5,7 +5,7 @@
   },
   "metadata": {
     "list": "uuid, timestamp_iso8061, header[x-request-id], scheduled_at",
-    "field_name" : "metadata"
+    "field_name" : "_"
   },
   "port": 8080
 }
