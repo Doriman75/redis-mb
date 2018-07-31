@@ -7,41 +7,42 @@ Object.defineProperty(Array.prototype, 'chunk', {
 });
 
 const functions = {
-  "uuid": function() {
+  uuid() {
     return uuidv4();
   },
-  "timestamp": function() {
+  timestamp() {
     return new Date().getTime();
   },
-  "timestamp_iso8061": function() {
+  timestamp_iso8061() {
     return new Date().toISOString();
   },
-  "headers": function(params) {
+  headers(params) {
     return params;
   },
-  "scheduled_at": function(params) {
+  scheduled_at(params) {
     return params.scheduled_at;
   },
-  "header": function(params, param) {
+  header(params, param) {
     var k = Object.keys(params)
       .filter(e => e.toLowerCase() == param.toLowerCase())[0];
-
     return params[k];
   }
 };
 
 function meta(metadata_list, params) {
-  var result = {};
-  var list = metadata_list.split(",").map(e => e.trim());
-  list
+  return metadata_list
+    .split(",")
+    .map(f => f.trim())
     .map(f => {
       return {
         method: f.indexOf('[') != -1 ? f.substring(0, f.indexOf('[')) : f,
         param: f.indexOf('[') != -1 ? f.substring(1 + f.indexOf('['), f.indexOf(']')) : f,
       }
     })
-    .forEach(f => result[f.param] = functions[f.method](params, f.param));
-  return result;
+    .reduce((result, f) => {
+      result[f.param] = functions[f.method](params, f.param);
+      return result
+    }, {});
 }
 
 async function enqueue(topic, messages, params) {
