@@ -1,7 +1,7 @@
 const uuidv4 = require('uuid/v4');
 
 Object.defineProperty(Array.prototype, 'chunk', {
-  value: function(n) {
+  value(n) {
     return Array.from(Array(Math.ceil(this.length / n)), (_, i) => this.slice(i * n, i * n + n));
   }
 });
