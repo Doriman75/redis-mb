@@ -7,5 +7,10 @@
     "list": "uuid, timestamp_iso8061, header[x-request-id], scheduled_at",
     "field_name" : "_"
   },
-  "port": 8080
+  "port": 8080,
+  "redis":{
+    "port": 6379,
+    "host": "localhost",
+    "db": 0
+  }
 }
