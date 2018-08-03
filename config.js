@@ -8,7 +8,9 @@ var conf = {
     "field_name": "metadata"
   },
   "port": 8080,
-  "redis": {}
+  "redis": {
+    "showFriendlyErrorStack": true
+  }
 }
 
 module.exports = function(filename) {
