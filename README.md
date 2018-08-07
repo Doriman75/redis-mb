@@ -1,6 +1,3 @@
-
-
-
 # redis-mb
 **redis-mb** is a Message Broker based on Redis and Node.js. It exposes a simple REST API.
 
@@ -11,7 +8,11 @@ Here an example of a *Virtual Topic* with one Producer and four Consumers.
 
 ![Virtual Topic](docs/vt.svg)
 
-# Installation
+# Installation and start
+To install the application you have:
+- download the project from github using the command ```git clone https://github.com/Doriman75/redis-mb.git ```
+- run ```npm install```
+- start the application with  ```npm start``` or ```node mb.js```
 
 
 # API
@@ -68,7 +69,7 @@ The list of available metadata is:
  - ```timestamp_iso8061```: the timestamp in ISO8061 format (ie. 2018-07-23T16:00:45.333Z)
  - ```headers```: all headers in the http request
  - ```header[<header_name>]```: the header *header_name* in the http request.
-
+ - ```scheduled_at```: the moment since the message can be dequeued.
 
 The body of the response is number of the messages actually enqueued.
 
@@ -124,7 +125,6 @@ response:
     ]
 }
 ```
-
 
 ### Example: enqueue a message in the topic 'email' scheduled at a specific date, with specific metadata
 ```
@@ -310,3 +310,8 @@ In the following example we have:
 ```
 
 ## Command line
+The only command line parameter is the name of the config file to use.
+
+Example:
+
+```node mb.js conf.json```
