@@ -1,5 +1,4 @@
 const fs = require('fs');
-
 const conf = require("./config")(process.argv[2]);
 console.log(JSON.stringify(conf, null, 4));
 

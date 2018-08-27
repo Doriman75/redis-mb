@@ -2,9 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
 var engine = null;
-app.use(bodyParser.json({
-  limit: "10mb"
-}));
+app.use(bodyParser.json({ limit: "10mb" }));
 
 app.post("/api/v1/topics/:topic", async function(req, res) {
   var params = Object.assign({}, req.query, req.headers)
