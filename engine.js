@@ -55,13 +55,17 @@ async function enqueue(topic, messages, params) {
       m[metadata_field] = meta(metadata_list, params);
       return m
     });
-
-  await Promise.all(messages_with_meta
-    .map(m => JSON.stringify(m))
-    .chunk(1000)
-    .map(list => this.redis.enqueue(topic, JSON.stringify(list), scheduled_at))
-  );
-  return messages_with_meta;
+  try {
+    await Promise.all(messages_with_meta
+      .map(m => JSON.stringify(m))
+      .chunk(1000)
+      .map(list => this.redis.enqueue(topic, JSON.stringify(list), scheduled_at))
+    );
+    return messages_with_meta;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 }
 
 function sleep(ms) {

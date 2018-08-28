@@ -2,11 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
 var engine = null;
-app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.json({ limit: "20mb" }));
 
 app.post("/api/v1/topics/:topic", async function(req, res) {
   var params = Object.assign({}, req.query, req.headers)
   var messages_with_meta = await engine.enqueue(req.params.topic, req.body, params);
+  if (!messages_with_meta) return res.status(500).send("internal server error");
   var result = {
     "added": messages_with_meta.length
   }
