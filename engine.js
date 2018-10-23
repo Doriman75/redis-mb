@@ -1,4 +1,7 @@
 const uuidv4 = require('uuid/v4');
+const zlib = require('zlib');
+var redis = null;
+var conf = null;
 
 Object.defineProperty(Array.prototype, 'chunk', {
   value(n) {
@@ -44,11 +47,27 @@ function meta(metadata_list, params) {
       return result
     }, {});
 }
+/*
+function compress(json) {
+  return zlib.deflateSync(JSON.stringify(json)).toString('binary');
+}
+
+function decompress(s) {
+  return JSON.parse(zlib.inflateSync(new Buffer(s, 'binary')).toString());
+}
+*/
+function compress(json) {
+  return JSON.stringify(json);
+}
+
+function decompress(s) {
+  return JSON.parse(s);
+}
 
 async function enqueue(topic, messages, params) {
   var messages = Array.isArray(messages) ? messages : [messages];
-  var metadata_field = this.conf.metadata.field_name;
-  var metadata_list = this.conf.metadata.list;
+  var metadata_field = conf.metadata.field_name;
+  var metadata_list = conf.metadata.list;
   var scheduled_at = params.scheduled_at ? new Date(params.scheduled_at).getTime() : new Date().getTime();
   var messages_with_meta = messages
     .map(m => {
@@ -57,9 +76,9 @@ async function enqueue(topic, messages, params) {
     });
   try {
     await Promise.all(messages_with_meta
-      .map(m => JSON.stringify(m))
+      .map(m => compress(m))
       .chunk(1000)
-      .map(list => this.redis.enqueue(topic, JSON.stringify(list), scheduled_at))
+      .map(list => redis.enqueue(topic, JSON.stringify(list), scheduled_at))
     );
     return messages_with_meta;
   } catch (e) {
@@ -74,19 +93,27 @@ function sleep(ms) {
   })
 }
 
-async function dequeue(queue, consumer) {
-  for (var i = 0; i < this.conf.long_polling.retry; i++) {
-    var result = JSON.parse(await this.redis.dequeue(queue, consumer));
-    if (result) return result;
-    await sleep(this.conf.long_polling.interval);
+async function dequeue(queue, consumer, n) {
+  if (!n) n = 1;
+  if (typeof n == "string") n = parseInt(n);
+  if (!n) n = 1;
+  for (var i = 0; i < conf.long_polling.retry; i++) {
+    let messages = await redis.dequeue(queue, consumer, n);
+    if (!messages) {
+      await sleep(conf.long_polling.interval);
+      continue;
+    }
+    let result = messages.reduce((r, e) => { r.push(decompress(e)); return r; }, []);
+    if (n == 1) return result[0];
+    return result;
   }
   return null;
 }
 
-module.exports = function(redis, conf) {
+module.exports = function(the_redis, the_conf) {
+  redis = the_redis;
+  conf = the_conf;
   return {
-    redis: redis,
-    conf: conf,
     enqueue: enqueue,
     dequeue: dequeue
   }

@@ -12,4 +12,5 @@ redis.defineCommand("dequeue", {
   lua: fs.readFileSync("lua/dequeue.lua", "utf-8")
 });
 
-require("./api")(redis, conf);
+const engine = require("./engine")(redis, conf);
+require("./api")(engine, conf);

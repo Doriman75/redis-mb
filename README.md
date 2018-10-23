@@ -12,21 +12,24 @@ Here an example of a *Virtual Topic* with one Producer and four Consumers.
 To install the application you have:
 - download the project from github using the command ```git clone https://github.com/Doriman75/redis-mb.git ```
 - run ```npm install```
-- start the application with  ```npm start``` or ```node mb.js```
+- start the application with  ```npm start``` or ```node server.js```
 
 
 # API
 ## To consume a message from a queue
 The api to dequeue a message from the *Virtual Topic* is:
 
-```GET: /api/v1/queues/[virtual-topic]/[consumer]```
+```
+GET: /api/v1/queues/<virtual-topic>/<consumer>[?n=<n>]
+```
 
 *virtual-topic* is the name of the virtual topic
 *consumer* is the name of the consumer
+*n* is the maximum number of message to dequeue (default: 1)
 
 if a message is available it is returned as body of the response and the http status is 200.
 if a message is not available the response (returned after a timeout) is empty and the http status is 204.
-**redis-mb** assumes that the client adopts the *long polling* technique to get the messages. The timeout before a response is provided is configurable.
+**redis-mb** assumes that the client adopts the *long polling* technique to get the messages. The timeout before a response is configurable.
 
 ### Example: getting a message from the virtual topic
 ```
@@ -41,17 +44,57 @@ response:
 }
 ```
 
-### Example: getting a message from the virtual topic (no data available)
+### Example: getting 5 messages from the virtual topic
 ```
+url: /api/v1/queues/email/email-sender?n=5
+method: GET
+HTTP Status: 200
+response:
+[
+  {
+    	"to":"user1@domain.com",
+    	"subject":"something about redis-mb1",
+    	"body":"redis-mb is very simple1"
+  },
+  {
+    	"to":"user2@domain.com",
+    	"subject":"something about redis-mb2",
+    	"body":"redis-mb is very simple2"
+  },
+  {
+    	"to":"user3@domain.com",
+    	"subject":"something about redis-mb3",
+    	"body":"redis-mb is very simple3"
+  },
+  {
+    	"to":"user4@domain.com",
+    	"subject":"something about redis-mb4",
+    	"body":"redis-mb is very simple4"
+  },
+  {
+    	"to":"user5@domain.com",
+    	"subject":"something about redis-mb5",
+    	"body":"redis-mb is very simple5"
+  }
+]
+```
+
+### Example: getting a message from the virtual topic (no data available)
+
+```
+
 url: /api/v1/queues/email/email-sender
 method: GET
 HTTP Status: 204
+
 ```
 
 ## To produce a message in a topic
 The api to enqueue a message in the *Virtual Topic* is:
 
-```POST: /api/v1/topics/[virtual-topic]?metadata=[metadata-list]&list=[boolean]&scheduled_at=[scheduled_at]```
+```
+POST: /api/v1/topics/[virtual-topic]?metadata=[metadata-list]&list=[boolean]&scheduled_at=[scheduled_at]
+```
 
 *virtual-topic* is the name of the virtual topic where to post the message.
 *metadata-list* is the list of metadata to add to the message.
@@ -294,7 +337,7 @@ It is possible to use a configuration file (in json format) to set the property 
 In the following example we have:
 * the timeout before returning "no data" is 5 seconds (interval = 500, retry = 10)
 * The HTTP port where the server runs is 8080
-* In each message will be created a field named ```"_"``` in witch
+* In each message will be created a field named ```"_"``` where will be put the metadata.
 ```
 {
   "long_polling": {

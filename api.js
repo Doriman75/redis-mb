@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
 var engine = null;
-app.use(bodyParser.json({ limit: "20mb" }));
+app.use(bodyParser.json({ limit: "100mb" }));
 
 app.post("/api/v1/topics/:topic", async function(req, res) {
   var params = Object.assign({}, req.query, req.headers)
@@ -17,13 +17,13 @@ app.post("/api/v1/topics/:topic", async function(req, res) {
 });
 
 app.get("/api/v1/queues/:queue/:consumer", async function(req, res) {
-  var result = await engine.dequeue(req.params.queue, req.params.consumer);
+  var result = await engine.dequeue(req.params.queue, req.params.consumer, req.query.n);
   res.status(result ? 200 : 204).json(result);
 });
 
-module.exports = function(redis, conf) {
-  engine = require("./engine")(redis, conf);
+module.exports = function(the_engine, conf) {
   app.listen(conf.port, function() {
+    engine = the_engine;
     console.log("mb started at", new Date(), "on port", conf.port);
   });
 }
